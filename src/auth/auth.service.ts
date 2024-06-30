@@ -34,12 +34,11 @@ export class AuthService {
       password: userPassword,
     });
 
-    const tokens = await this.generateAuthTokens(newUser.id);
-
-    await newUser.save();
+    const user = await newUser.save();
+    const tokens = await this.generateAuthTokens(user.id);
 
     return {
-      user: this.getUserFields(newUser),
+      user: this.getUserFields(user),
       ...tokens,
     };
   }

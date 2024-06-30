@@ -1,7 +1,21 @@
-import { Controller, Get } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Put,
+  Query,
+  UsePipes,
+  ValidationPipe,
+} from "@nestjs/common";
 import { UserService } from "./user.service";
 import { Auth } from "src/auth/decorators/auth.decorator";
 import { User } from "./decorators/user.decorator";
+import { UpdateUserDto } from "./dto/updateUser.dto";
+import { IdValidationPipe } from "src/pipes/id.validation.pip";
 
 @Controller("users")
 export class UserController {
@@ -10,6 +24,50 @@ export class UserController {
   @Get("profile")
   @Auth()
   async getProfile(@User("_id") _id: string) {
+    return this.userService.getById(_id);
+  }
+
+  @UsePipes(new ValidationPipe())
+  @Put("profile")
+  @HttpCode(HttpStatus.OK)
+  @Auth()
+  async updateProfile(@User("_id") _id: string, @Body() dto: UpdateUserDto) {
+    return this.userService.updateProfile(_id, dto);
+  }
+
+  @UsePipes(new ValidationPipe())
+  @Put(":id")
+  @HttpCode(HttpStatus.OK)
+  @Auth("admin")
+  async updateUser(
+    @Param("id", IdValidationPipe) _id: string,
+    @Body() dto: UpdateUserDto,
+  ) {
+    return this.userService.updateProfile(_id, dto);
+  }
+
+  @Delete(":id")
+  @HttpCode(HttpStatus.OK)
+  @Auth("admin")
+  async deleteUser(@Param("id", IdValidationPipe) _id: string) {
+    return this.userService.deleteUser(_id);
+  }
+
+  @Get("count")
+  @Auth("admin")
+  async getCountUsers() {
+    return this.userService.getCount();
+  }
+
+  @Get()
+  @Auth("admin")
+  async getUsers(@Query("searchTerm") searchTerm?: string) {
+    return this.userService.getAll(searchTerm);
+  }
+
+  @Get(":id")
+  @Auth("admin")
+  async getUser(@Param("id", IdValidationPipe) _id: string) {
     return this.userService.getById(_id);
   }
 }
