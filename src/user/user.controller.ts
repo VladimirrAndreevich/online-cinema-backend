@@ -38,8 +38,6 @@ export class UserController {
     return this.userService.updateProfile(_id, dto);
   }
 
-  /* Working space */
-
   @Get("profile/favorites")
   @HttpCode(HttpStatus.OK)
   @Auth()
@@ -56,8 +54,6 @@ export class UserController {
   ) {
     return this.userService.toggleFavorites(movieId, user);
   }
-
-  /* Working space */
 
   @UsePipes(new ValidationPipe())
   @Put(":id")

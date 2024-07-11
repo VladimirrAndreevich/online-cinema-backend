@@ -141,4 +141,16 @@ export class MovieService {
 
     return deletedMovie;
   }
+
+  async updateRating(id: Types.ObjectId, newRating: number) {
+    return this.movieModel
+      .findByIdAndUpdate(
+        id,
+        {
+          rating: newRating,
+        },
+        { new: true },
+      )
+      .exec();
+  }
 }
