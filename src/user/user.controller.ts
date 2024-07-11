@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Put,
   Query,
   UsePipes,
@@ -16,6 +17,8 @@ import { Auth } from "src/auth/decorators/auth.decorator";
 import { User } from "./decorators/user.decorator";
 import { UpdateUserDto } from "./dto/updateUser.dto";
 import { IdValidationPipe } from "src/pipes/id.validation.pip";
+import { Types } from "mongoose";
+import { UserModel } from "./user.model";
 
 @Controller("users")
 export class UserController {
@@ -34,6 +37,27 @@ export class UserController {
   async updateProfile(@User("_id") _id: string, @Body() dto: UpdateUserDto) {
     return this.userService.updateProfile(_id, dto);
   }
+
+  /* Working space */
+
+  @Get("profile/favorites")
+  @HttpCode(HttpStatus.OK)
+  @Auth()
+  async getFavorites(@User("_id") _id: Types.ObjectId) {
+    return this.userService.getFavoritesMovies(_id);
+  }
+
+  @Patch("profile/favorites")
+  @HttpCode(HttpStatus.OK)
+  @Auth()
+  async toggleFavorites(
+    @Body("movieId", IdValidationPipe) movieId: Types.ObjectId,
+    @User() user: UserModel,
+  ) {
+    return this.userService.toggleFavorites(movieId, user);
+  }
+
+  /* Working space */
 
   @UsePipes(new ValidationPipe())
   @Put(":id")
